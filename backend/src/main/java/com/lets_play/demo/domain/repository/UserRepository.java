@@ -1,5 +1,14 @@
 package com.lets_play.demo.domain.repository;
+import com.lets_play.demo.domain.entity.User;
+import java.util.Optional;
 
-public class UserRepository {
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends MongoRepository<User, String> {
     
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

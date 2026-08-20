@@ -1,4 +1,4 @@
-package com.letsplay.demo.dto.request;
+package com.lets_play.demo.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
