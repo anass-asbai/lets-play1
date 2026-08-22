@@ -1,4 +1,4 @@
-package com.lets_play.demo.web;
+package com.lets_play.demo.controller;
 
 import com.lets_play.demo.dto.request.LoginRequest;
 import com.lets_play.demo.dto.request.RegisterRequest;

@@ -22,25 +22,21 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // متاح للكل (بدون توكين)
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
-    // متاح للكل
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    // خاصو توكين
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody CreateProductRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(request));
     }
 
-    // خاصو توكين
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable String id, 
@@ -48,11 +44,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(id, request));
     }
 
-    // خاصو توكين + تقدر تزيد @PreAuthorize باش تخلي غير ADMIN يمسح
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // اختياري: إلا بغيتي غير الأدمن اللي يمسح
+    @PreAuthorize("hasRole('ADMIN')") 
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build(); // كترجع 204 No Content
+        return ResponseEntity.noContent().build(); 
     }
 }

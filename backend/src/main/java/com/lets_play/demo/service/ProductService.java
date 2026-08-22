@@ -25,7 +25,6 @@ public class ProductService {
     // CREATE
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = productMapper.toEntity(request);
-        // مؤقتاً غنحطو userId عشوائي حتى نربطوه مع اليوزر اللي مكونيكطي
         product.setUserId("current-user-id"); 
         
         Product savedProduct = productRepository.save(product);
@@ -52,7 +51,6 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
         
-        // MapStruct غياخد الداتا من request ويحطها فـ existingProduct
         productMapper.updateEntityFromRequest(request, existingProduct);
         
         Product updatedProduct = productRepository.save(existingProduct);
