@@ -12,4 +12,5 @@ import com.lets_play.demo.domain.entity.Product;
 public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findByCategory(String category);
     Page<Product> findByCategory(String category, Pageable pageable);
+    void deleteByUserId(String userId);
 }

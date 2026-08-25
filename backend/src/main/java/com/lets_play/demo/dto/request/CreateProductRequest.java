@@ -13,5 +13,7 @@ public record CreateProductRequest(
 
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be greater than 0")
-    Double price
+    Double price,
+
+    String category
 ) {}
