@@ -8,10 +8,13 @@ import com.lets_play.demo.dto.request.RegisterRequest;
 import com.lets_play.demo.dto.response.AuthResponse;
 import com.lets_play.demo.mapper.UserMapper;
 import com.lets_play.demo.security.jwt.JwtTokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
@@ -37,8 +40,9 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        // Return 409 CONFLICT if email already exists
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already in use");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
         }
 
         User user = new User();
@@ -61,15 +65,21 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
+        // Return 401 UNAUTHORIZED if password/email is wrong
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.email(),
+                            request.password()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
 
+        // Return 404 NOT FOUND if user is missing
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         var userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
