@@ -18,8 +18,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -28,7 +28,6 @@ import io.jsonwebtoken.security.SignatureException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -148,7 +147,7 @@ public class GlobalExceptionHandler {
             AuthenticationException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
-                "Authentication failed: " + ex.getMessage(),
+                "Authentication failed",
                 null,
                 request.getRequestURI()
         );
@@ -235,6 +234,19 @@ public class GlobalExceptionHandler {
 
     // ---------- GENERIC ----------
 
+        @ExceptionHandler(ResponseStatusException.class)
+        public ResponseEntity<ErrorResponse> handleResponseStatusException(
+                        ResponseStatusException ex, HttpServletRequest request) {
+                HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+                ErrorResponse errorResponse = new ErrorResponse(
+                                status.value(),
+                                ex.getReason() != null ? ex.getReason() : status.getReasonPhrase(),
+                                null,
+                                request.getRequestURI()
+                );
+                return ResponseEntity.status(status).body(errorResponse);
+        }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
@@ -263,12 +275,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRuntimeException(
             RuntimeException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred",
                 null,
                 request.getRequestURI()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     // Catch-all fallback — anything not explicitly handled above
@@ -277,7 +289,7 @@ public class GlobalExceptionHandler {
             Exception ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred: " + ex.getMessage(),
+                "An unexpected error occurred",
                 null,
                 request.getRequestURI()
         );
