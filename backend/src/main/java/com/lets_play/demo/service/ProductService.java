@@ -38,7 +38,6 @@ public class ProductService {
     // CREATE
     public ProductResponse createProduct(CreateProductRequest request) {
         String currentUserEmail = securityUtils.getCurrentUserEmail();
-        
         // Return 404 NOT FOUND if user doesn't exist
         User currentUser = userRepository.findByEmail(currentUserEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

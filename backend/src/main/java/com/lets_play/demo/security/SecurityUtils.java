@@ -11,7 +11,6 @@ public class SecurityUtils {
     // This method returns the email (username) of the logged-in user
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("No authenticated user found");
         }

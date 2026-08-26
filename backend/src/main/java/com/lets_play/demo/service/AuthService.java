@@ -30,8 +30,7 @@ public class AuthService {
             PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider,
             AuthenticationManager authenticationManager,
-            UserMapper userMapper
-    ) {
+            UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -40,16 +39,18 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
-        // Return 409 CONFLICT if email already exists
         if (userRepository.existsByEmail(request.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
         }
 
-        User user = new User();
-        user.setName(request.name());
-        user.setEmail(request.email());
+        // Determine role in the backend
+        Role assignedRole = (userRepository.count() == 0) ? Role.ROLE_ADMIN : Role.ROLE_USER;
+
+        // Create the entity directly (or pass the assignedRole into your
+        // mapper/constructor)
+        User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRole(Role.ROLE_USER);
+        user.setRole(assignedRole);
 
         User savedUser = userRepository.save(user);
 
@@ -70,9 +71,7 @@ public class AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.email(),
-                            request.password()
-                    )
-            );
+                            request.password()));
         } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
