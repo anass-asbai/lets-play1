@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityUtils {
 
-    // This method returns the email (username) of the logged-in user
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -18,7 +17,7 @@ public class SecurityUtils {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername(); // returns email in our case
+            return ((UserDetails) principal).getUsername(); 
         } else {
             return principal.toString();
         }

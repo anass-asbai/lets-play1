@@ -6,6 +6,7 @@ import com.lets_play.demo.dto.response.ApiResponse;
 import com.lets_play.demo.dto.response.ProductResponse;
 import com.lets_play.demo.service.ProductService;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(@Valid @RequestBody CreateProductRequest request) {
         ProductResponse newProduct = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -42,6 +44,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
             @PathVariable String id, 
             @Valid @RequestBody UpdateProductRequest request) {
@@ -50,6 +53,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
         // Changed to .ok() instead of .noContent() so the user can actually see the message body

@@ -38,7 +38,7 @@ public class JwtTokenProvider {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(getSignInKey()) // Spring Boot 3 / JJWT 0.12.x approach
+                .signWith(getSignInKey()) 
                 .compact();
     }
 

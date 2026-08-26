@@ -3,7 +3,6 @@ package com.lets_play.demo.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import com.lets_play.demo.domain.entity.Role;
 public record RegisterRequest(
     @NotBlank(message = "Name is required")
     String name,
