@@ -57,6 +57,12 @@ public class UserService {
         }
         if (request.name() != null) user.setName(request.name());
         if (request.password() != null) user.setPassword(passwordEncoder.encode(request.password()));
+        
+        if (user.getRole() == Role.ROLE_ADMIN && userRepository.countByRole(Role.ROLE_ADMIN) <= 1) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Cannot change the role of the only admin user");
+        }
         if (request.role() != null) user.setRole(request.role());
         return userMapper.toResponse(userRepository.save(user));
     }

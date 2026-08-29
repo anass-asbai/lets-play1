@@ -4,9 +4,7 @@ import com.lets_play.demo.domain.entity.Product;
 import com.lets_play.demo.dto.request.CreateProductRequest;
 import com.lets_play.demo.dto.request.UpdateProductRequest;
 import com.lets_play.demo.dto.response.ProductResponse;
-import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 
 
 public interface ProductMapper {
