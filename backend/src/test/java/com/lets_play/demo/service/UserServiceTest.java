@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +58,25 @@ class UserServiceTest {
 
         verify(productRepository).deleteByUserId("user-1");
         verify(userRepository).deleteById("user-1");
+    }
+
+    @Test
+    void deleteUserRejectsDeletingTheOnlyAdmin() {
+        UserRepository userRepository = mock(UserRepository.class);
+        ProductRepository productRepository = mock(ProductRepository.class);
+        UserService userService = new UserService(
+                userRepository, productRepository, mock(PasswordEncoder.class), mock(UserMapper.class));
+        User admin = User.builder().id("admin-1").email("admin@example.com").role(Role.ROLE_ADMIN).build();
+
+        when(userRepository.findById("admin-1")).thenReturn(Optional.of(admin));
+        when(userRepository.countByRole(Role.ROLE_ADMIN)).thenReturn(1L);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> userService.deleteUser("admin-1"));
+
+        assertEquals("Cannot delete the only admin user", exception.getReason());
+        verify(productRepository, never()).deleteByUserId("admin-1");
+        verify(userRepository, never()).deleteById("admin-1");
     }
 
     @Test

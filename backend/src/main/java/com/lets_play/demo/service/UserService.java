@@ -62,7 +62,14 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        findUser(id);
+        User user = findUser(id);
+
+        if (user.getRole() == Role.ROLE_ADMIN && userRepository.countByRole(Role.ROLE_ADMIN) <= 1) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Cannot delete the only admin user");
+        }
+
         productRepository.deleteByUserId(id);
         userRepository.deleteById(id);
     }

@@ -1,0 +1,6 @@
+MONGO_INITDB_ROOT_USERNAME=root
+MONGO_INITDB_ROOT_PASSWORD=change-this-mongodb-password
+MONGODB_URI=mongodb://root:change-this-mongodb-password@localhost:27017/letsplay_db?authSource=admin
+JWT_SECRET=replace-with-a-base64-encoded-secret-at-least-256-bits-long
+JWT_EXPIRATION=86400000
+SSL_KEY_STORE_PASSWORD=change-this-keystore-password
